@@ -8,33 +8,68 @@ const CartItem = ({ onContinueShopping }) => {
   const dispatch = useDispatch();
 
   // Calculate total amount for all products in the cart
-  const calculateTotalAmount = () => {
- 
+  const calculateTotalAmount = (cart) => {
+    // Initialize a variable total to hold the cumulative sum.
+    let total = 0;
+  
+    // Iterate over the cart array.
+    cart.forEach(item => {
+      // For each item, extract its quantity and cost string.
+      const { quantity, cost } = item;
+      
+      // Convert the cost string (e.g., "$10.00") to a number,
+      // then multiply it by the quantity.
+      const itemTotal = parseFloat(cost.substring(1)) * quantity;
+      
+      // Add the resulting value to total.
+      total += itemTotal;
+    });
+  
+    // After processing all items, return the final total sum.
+    return total;
   };
 
   const handleContinueShopping = (e) => {
-   
+    onContinueShopping(e);
   };
 
-
+  const handleCheckoutShopping = (e) => {
+    alert('Functionality to be added for future reference');
+  };
 
   const handleIncrement = (item) => {
-  };
+    // Usa a ação 'updateQuantity' para aumentar a quantidade
+    dispatch(updateQuantity({ name: item.name, quantity: item.quantity + 1 }));
+    };
 
-  const handleDecrement = (item) => {
-   
-  };
+    const handleDecrement = (item) => {
+        if (item.quantity > 1) {
+            // Usa a ação 'updateQuantity' para diminuir
+            dispatch(updateQuantity({ name: item.name, quantity: item.quantity - 1 }));
+        } else {
+            // Se a quantidade for 1, usa 'removeItem', como na dica da imagem
+            dispatch(removeItem(item.name)); 
+        }
+    };
 
-  const handleRemove = (item) => {
-  };
+    const handleRemove = (item) => {
+        // Esta é a solução exata que a imagem te deu como dica!
+        // Ela envia o NOME do item a ser removido.
+        dispatch(removeItem(item.name));
+    };
 
   // Calculate total cost based on quantity for an item
   const calculateTotalCost = (item) => {
+    // Extrai o valor numérico da string de custo (ex: "$19.99" -> 19.99)
+    const unitPrice = parseFloat(item.cost.substring(1));
+    
+    // Multiplica o preço pela quantidade e retorna o resultado.
+    return item.quantity * unitPrice;
   };
 
   return (
     <div className="cart-container">
-      <h2 style={{ color: 'black' }}>Total Cart Amount: ${calculateTotalAmount()}</h2>
+      <h2 style={{ color: 'black' }}>Total Cart Amount: ${calculateTotalAmount(cart)}</h2>
       <div>
         {cart.map(item => (
           <div className="cart-item" key={item.name}>
